@@ -48,6 +48,7 @@ peaks = []
 forgedPeaks = []
 writeTimes = []
 writeFTimes = []
+print('xD')
 # read()
 distances = []
 forgedDistances = []
