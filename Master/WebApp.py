@@ -1,11 +1,18 @@
-from flask import Flask, request
 import json
+import os
 from random import randint
-import pymongo
 
+from flask import Flask, request
+from pymongo import MongoClient
+
+'''
+run localhost:5000
+'''
 app = Flask(__name__)
 
-myclient = pymongo.MongoClient("mongodb://localhost:27017/")
+myclient = MongoClient(
+    os.environ['DB_PORT_27017_TCP_ADDR'],
+    27017)
 
 database = myclient['master']
 collection = database['readings']
@@ -25,3 +32,7 @@ def save():
     content = request.json
     collection.insert(content)
     return 'xD'
+
+
+if __name__ == "__main__":
+    app.run(host='0.0.0.0')
