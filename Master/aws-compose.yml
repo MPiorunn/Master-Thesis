@@ -1,0 +1,9 @@
+db:
+  image: mongo:3.0.2
+web:
+  image: mpiorun/master
+  cpu_shares: 100
+  mem_limit: 262144000
+  ports:
+    - "5000:5000"
+

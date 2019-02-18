@@ -1,6 +1,9 @@
 web:
   build: .
   command: python WebApp.py
+  container_name : master
+  environment:
+    - DEBUG=True
   ports:
     - "5000:5000"
   volumes:
