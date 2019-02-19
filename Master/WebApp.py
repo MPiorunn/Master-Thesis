@@ -24,12 +24,25 @@ collection = database['readings']
 def save():
     content = request.json
     collection.insert_one(content)
-    return 'content'
+    return content
+
+
+@app.route('/get', methods=["GET"])
+def get():
+    name = request.args.get("name")
+    readings = []
+    document = collection.find({"name": name})
+    for doc in document:
+        readings.append(str(doc))
+    stringed = json.dumps(readings)
+    return stringed
 
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0')
 
+
+# never use this method!
 
 def read_files_save_all():
     ja = "ja"
@@ -59,9 +72,6 @@ def read_files_save_all():
         print("Insert for mrozek " + str(i))
 
     return 'saveed'
-
-
-# never use this method!
 
 
 def divide(file):
