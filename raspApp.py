@@ -4,7 +4,8 @@ import time
 import os
 import json
 import matplotlib
-# matplotlib.use("AGG")
+
+matplotlib.use("AGG")
 import matplotlib.pyplot as plt
 from scipy.fftpack import fft
 from pymongo import MongoClient
@@ -83,8 +84,10 @@ bus.write_byte_data(ad, power_mgmt_1, 0)
 data = []
 sampling = 0.025
 print("\033c")
+raw_input("Start ")
 startTime = time.time()
 time.sleep(sampling)
+
 try:
     while True:
         measureTime = time.time() - startTime
