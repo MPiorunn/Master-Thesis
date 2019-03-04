@@ -21,7 +21,6 @@ power_mgmt_1 = 0x6b
 COEFFICIENTS_HIGH_05_HZ = [1, -1.905384612118461, 0.910092542787947, 0.953986986993339, -1.907503180919730,
                            0.953986986993339]
 
-words = ['need', 'look', 'melted', 'retire', 'fairies', 'cheat', 'acoustics', 'blood', 'drain', 'ring']
 
 
 def __init__(self):

@@ -124,40 +124,8 @@ try:
         mag.append(dist(x[i], y[i], z[i]))
     for i in range(0, len(mag)):
         sma.append(do_sma(mag, i))
-    # plt.subplot(311)
-    # plt.xlabel('Time [t]')
-    # plt.plot(t, x)
-    # plt.plot(t, y)
-    # plt.plot(t, z)
-    # plt.legend(['x', 'y', 'z'])
-    # plt.ylim(-1.2, 1.2)
-    # plt.subplot(312)
-    # plt.xlabel('Time [t]')
-    # plt.ylim(0, 2)
-    # plt.plot(t, mag)
-    # plt.legend(['mag'])
-    # plt.subplot(313)
-    # plt.xlabel('Time [t]')
-    # plt.ylim(0, 2)
-    # plt.plot(t, sma)
-    # plt.legend(['sma'])
-    # plt.show()
-    # MAG = {'Mag': mag}
-    # SMA = {"SMA": sma}
-
-    '''
-    fft_mag = fft(mag)
-    plt.subplot(313)
-    plt.plot(fft_mag)
-    plt.xlabel('Freq [Hz]')
-    plt.ylabel('Amplitude')
-    plt.legend(['fft'])
-    '''
     path = "data/"
-    jsone = {}
-    jsone['t'] = []
-    jsone['mag'] = []
-    jsone['sma'] = []
+    jsone = {'t': [], 'mag': [], 'sma': []}
     for i in range(1, 100):
         s = path + "fig(" + str(i) + ").png"
         exists = os.path.isfile(s)
