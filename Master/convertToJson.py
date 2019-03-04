@@ -1,16 +1,17 @@
 import json
-import numpy as np
+import os
 
 
 def readFile(path):
-    with open(path + 'txt', "r") as file:
-        t = file.readline().replace("t[", "").replace("]", "").replace("\n", "").split(", ")
-        mag = file.readline().replace("MAG [", "").replace("]", "").replace("\n", "").split(", ")
-        sma = file.readline().replace("SMA [", "").replace("]", "").split(", ")
+    # with open(path + 'txt', "w+") as file:
+        # t = file.readline().replace("t[", "").replace("]", "").replace("\n", "").split(", ")
+        # mag = file.readline().replace("MAG [", "").replace("]", "").replace("\n", "").split(", ")
+        # sma = file.readline().replace("SMA [", "").replace("]", "").split(", ")
+    os.remove(path+'txt')
 
-    with open(path + 'json', "w+") as outfile:
-        jsone = {'t': t, 'mag': mag, 'sma': sma}
-        json.dump(jsone, outfile)
+    # with open(path + 'json', "w+") as outfile:
+    #     jsone = {'t': t, 'mag': mag, 'sma': sma}
+    #     json.dump(jsone, outfile)
 
 
 for i in range(1, 11):
