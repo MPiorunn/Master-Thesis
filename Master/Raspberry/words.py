@@ -85,10 +85,12 @@ print("\033c")
 startTime = time.time()
 time.sleep(sampling)
 i = 0
-try:
+wordsJson = {}
+# try:
+for word in words:
     while i < 10:
         measureTime = time.time() - startTime
-        print("Time : ", measureTime)
+        # print("Time : ", measureTime)
         acc_x = random.random()
         # acc_x = read_word_2c(0x3b) / 16384.0
         acc_y = random.random()
@@ -96,15 +98,15 @@ try:
         acc_z = random.random()
         # acc_z = read_word_2c(0x3f) / 16384.0
 
-        print("Acc X : ", acc_x)
-        print("Acc Y : ", acc_y)
-        print("Acc Z : ", acc_z)
+        # print("Acc X : ", acc_x)
+        # print("Acc Y : ", acc_y)
+        # print("Acc Z : ", acc_z)
         data.append([measureTime, acc_x, acc_y, acc_z])
         i += 1
         time.sleep(sampling)
 
         # print("\033c")
-        os.system('cls' if os.name == 'nt' else 'clear')
+        # os.system('cls' if os.name == 'nt' else 'clear')
     t = []
     x = []
     y = []
@@ -125,105 +127,98 @@ try:
     for i in range(0, len(mag)):
         sma.append(do_sma(mag, i))
     path = "data/"
-    jsone = {'t': [], 'mag': [], 'sma': []}
-    for i in range(1, 100):
-        s = path + "fig(" + str(i) + ").png"
-        exists = os.path.isfile(s)
-        if not exists:
-            file = path + "data(" + str(i) + ").json"
-            with open(file, "a") as outfile:
-                jsone['t'] = t
-                jsone['mag'] = mag
-                jsone['sma'] = sma
+    # jsone = {'t': [], 'mag': [], 'sma': []}
+    jsone = {'t': [], 'sma': []}
+    jsone['t'] = t
+    # jsone['mag'] = mag
+    jsone['sma'] = sma
+    wordsJson[word] = jsone
 
-                json.dump(jsone, outfile)
-                # jsone.append(json.dumps(t))
-                # jsone.append(json.dumps(mag))
-                # jsone.append(json.dumps(sma))
-                # txt.write("t" + json.dumps(t))
-                # txt.write("\n")
-                # txt.write("MAG " + json.dumps(mag))
-                # txt.write("\n")
-                s = path + "fig(" + str(i) + ").png"
-                print(s)
-                plt.savefig(s)
-            break
-
-except KeyboardInterrupt:
-    t = []
-    x = []
-    y = []
-    z = []
-    sma = []
-    mag = []
-    for val in data:
-        t.append(val[0])
-        x.append(val[1])
-        y.append(val[2])
-        z.append(val[3])
-
-    x = lowPassFilter(x)
-    y = lowPassFilter(y)
-    z = lowPassFilter(z)
-    for i in range(0, len(x)):
-        mag.append(dist(x[i], y[i], z[i]))
-    for i in range(0, len(mag)):
-        sma.append(do_sma(mag, i))
-    plt.subplot(311)
-    plt.xlabel('Time [t]')
-    plt.plot(t, x)
-    plt.plot(t, y)
-    plt.plot(t, z)
-    plt.legend(['x', 'y', 'z'])
-    plt.ylim(-1.2, 1.2)
-    plt.subplot(312)
-    plt.xlabel('Time [t]')
-    plt.ylim(0, 2)
-    plt.plot(t, mag)
-    plt.legend(['mag'])
-    plt.subplot(313)
-    plt.xlabel('Time [t]')
-    plt.ylim(0, 2)
-    plt.plot(t, sma)
-    plt.legend(['sma'])
-    # plt.show()
-    MAG = {'Mag': mag}
-    SMA = {"SMA": sma}
-
-    '''
-    fft_mag = fft(mag)
-    plt.subplot(313)
-    plt.plot(fft_mag)
-    plt.xlabel('Freq [Hz]')
-    plt.ylabel('Amplitude')
-    plt.legend(['fft'])
-    '''
-    path = "data/"
-    jsone = {}
-    jsone['t'] = []
-    jsone['mag'] = []
-    jsone['sma'] = []
-    for i in range(1, 100):
-        s = path + "fig(" + str(i) + ").png"
-        exists = os.path.isfile(s)
-        if not exists:
-            file = path + "data(" + str(i) + ").json"
-            with open(file, "a") as outfile:
-                jsone['t'].append(json.dumps(t))
-                jsone['mag'].append(json.dumps(mag))
-                jsone['sma'].append(json.dumps(sma))
-
-                json.dump(sma, outfile)
-                # jsone.append(json.dumps(t))
-                # jsone.append(json.dumps(mag))
-                # jsone.append(json.dumps(sma))
-                # txt.write("t" + json.dumps(t))
-                # txt.write("\n")
-                # txt.write("MAG " + json.dumps(mag))
-                # txt.write("\n")
-                s = path + "fig(" + str(i) + ").png"
-                print(s)
-                plt.savefig(s)
-            break
-
-    # pass
+for i in range(1, 100):
+    s = path + "fig(" + str(i) + ").png"
+    exists = os.path.isfile(s)
+    if not exists:
+        file = path + "data(" + str(i) + ").json"
+        with open(file, "a") as outfile:
+            json.dump(wordsJson, outfile)
+        break
+print(wordsJson)
+#
+# except KeyboardInterrupt:
+#     t = []
+#     x = []
+#     y = []
+#     z = []
+#     sma = []
+#     mag = []
+#     for val in data:
+#         t.append(val[0])
+#         x.append(val[1])
+#         y.append(val[2])
+#         z.append(val[3])
+#
+#     x = lowPassFilter(x)
+#     y = lowPassFilter(y)
+#     z = lowPassFilter(z)
+#     for i in range(0, len(x)):
+#         mag.append(dist(x[i], y[i], z[i]))
+#     for i in range(0, len(mag)):
+#         sma.append(do_sma(mag, i))
+#     plt.subplot(311)
+#     plt.xlabel('Time [t]')
+#     plt.plot(t, x)
+#     plt.plot(t, y)
+#     plt.plot(t, z)
+#     plt.legend(['x', 'y', 'z'])
+#     plt.ylim(-1.2, 1.2)
+#     plt.subplot(312)
+#     plt.xlabel('Time [t]')
+#     plt.ylim(0, 2)
+#     plt.plot(t, mag)
+#     plt.legend(['mag'])
+#     plt.subplot(313)
+#     plt.xlabel('Time [t]')
+#     plt.ylim(0, 2)
+#     plt.plot(t, sma)
+#     plt.legend(['sma'])
+#     # plt.show()
+#     MAG = {'Mag': mag}
+#     SMA = {"SMA": sma}
+#
+#     '''
+#     fft_mag = fft(mag)
+#     plt.subplot(313)
+#     plt.plot(fft_mag)
+#     plt.xlabel('Freq [Hz]')
+#     plt.ylabel('Amplitude')
+#     plt.legend(['fft'])
+#     '''
+#     path = "data/"
+#     jsone = {}
+#     jsone['t'] = []
+#     jsone['mag'] = []
+#     jsone['sma'] = []
+#     for i in range(1, 100):
+#         s = path + "fig(" + str(i) + ").png"
+#         exists = os.path.isfile(s)
+#         if not exists:
+#             file = path + "data(" + str(i) + ").json"
+#             with open(file, "a") as outfile:
+#                 jsone['t'].append(json.dumps(t))
+#                 jsone['mag'].append(json.dumps(mag))
+#                 jsone['sma'].append(json.dumps(sma))
+#
+#                 json.dump(sma, outfile)
+#                 # jsone.append(json.dumps(t))
+#                 # jsone.append(json.dumps(mag))
+#                 # jsone.append(json.dumps(sma))
+#                 # txt.write("t" + json.dumps(t))
+#                 # txt.write("\n")
+#                 # txt.write("MAG " + json.dumps(mag))
+#                 # txt.write("\n")
+#                 s = path + "fig(" + str(i) + ").png"
+#                 print(s)
+#                 plt.savefig(s)
+#             break
+#
+#     # pass
