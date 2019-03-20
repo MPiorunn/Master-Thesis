@@ -1,4 +1,4 @@
-# import smbus
+import smbus
 import math
 import time
 import keyboard
@@ -17,7 +17,7 @@ import matplotlib.pyplot as plt
 # db = client.test_database
 
 # Register
-power_mgmt_1 = 0x6baaaaaaaaaa
+power_mgmt_1 = 0x6b
 
 COEFFICIENTS_HIGH_05_HZ = [1, -1.905384612118461, 0.910092542787947, 0.953986986993339, -1.907503180919730,
                            0.953986986993339]
@@ -33,23 +33,23 @@ def lowPassFilter(data, c=COEFFICIENTS_HIGH_05_HZ):
     return f_d
 
 
-# def read_byte(reg):
-#     return bus.read_byte_data(ad, reg)
-#
-#
-# def read_word(reg):
-#     h = bus.read_byte_data(ad, reg)
-#     l = bus.read_byte_data(ad, reg + 1)
-#     value = (h << 8) + l
-#     return value
-#
-#
-# def read_word_2c(reg):
-#     val = read_word(reg)
-#     if val >= 0x8000:
-#         return -((65535 - val) + 1)
-#     else:
-#         return val
+def read_byte(reg):
+    return bus.read_byte_data(ad, reg)
+
+
+def read_word(reg):
+    h = bus.read_byte_data(ad, reg)
+    l = bus.read_byte_data(ad, reg + 1)
+    value = (h << 8) + l
+    return value
+
+
+def read_word_2c(reg):
+    val = read_word(reg)
+    if val >= 0x8000:
+        return -((65535 - val) + 1)
+    else:
+        return val
 
 
 def dist(a, b, c):
@@ -77,9 +77,9 @@ def do_sma(k, i):
     return (first + second + third) / 3
 
 
-# bus = smbus.SMBus(1)
+bus = smbus.SMBus(1)
 ad = 0x68
-# bus.write_byte_data(ad, power_mgmt_1, 0)
+bus.write_byte_data(ad, power_mgmt_1, 0)
 data = []
 sampling = 0.025
 print("\033c")
@@ -105,16 +105,16 @@ for word in words:
             measureTime = time.time() - startTime
             # print("\033c")
             print("Time : ", measureTime)
-            acc_x = random.random()
-            # acc_x = read_word_2c(0x3b) / 16384.0
-            acc_y = random.random()
-            # acc_y = read_word_2c(0x3d) / 16384.0
-            acc_z = random.random()
-            # acc_z = read_word_2c(0x3f) / 16384.0
+            # acc_x = random.random()
+            acc_x = read_word_2c(0x3b) / 16384.0
+            # acc_y = random.random()
+            acc_y = read_word_2c(0x3d) / 16384.0
+            # acc_z = random.random()
+            acc_z = read_word_2c(0x3f) / 16384.0
 
-            # print("Acc X : ", acc_x)
-            # print("Acc Y : ", acc_y)
-            # print("Acc Z : ", acc_z)
+            print("Acc X : ", acc_x)
+            print("Acc Y : ", acc_y)
+            print("Acc Z : ", acc_z)
             # os.system('cls' if os.name == 'nt' else 'clear')
             os.system('cls||clear')
             data.append([measureTime, acc_x, acc_y, acc_z])
