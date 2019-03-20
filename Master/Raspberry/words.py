@@ -9,12 +9,12 @@ import random
 
 matplotlib.use("AGG")
 import matplotlib.pyplot as plt
-from scipy.fftpack import fft
-from pymongo import MongoClient
+# from scipy.fftpack import fft
+# from pymongo import MongoClient
 
-client = MongoClient('localhost', 27017)
+# client = MongoClient('localhost', 27017)
 
-db = client.test_database
+# db = client.test_database
 
 # Register
 power_mgmt_1 = 0x6baaaaaaaaaa
@@ -103,6 +103,7 @@ for word in words:
             pressed = True
         else:
             measureTime = time.time() - startTime
+            # print("\033c")
             print("Time : ", measureTime)
             acc_x = random.random()
             # acc_x = read_word_2c(0x3b) / 16384.0
@@ -111,14 +112,15 @@ for word in words:
             acc_z = random.random()
             # acc_z = read_word_2c(0x3f) / 16384.0
 
-            print("Acc X : ", acc_x)
-            print("Acc Y : ", acc_y)
-            print("Acc Z : ", acc_z)
+            # print("Acc X : ", acc_x)
+            # print("Acc Y : ", acc_y)
+            # print("Acc Z : ", acc_z)
+            # os.system('cls' if os.name == 'nt' else 'clear')
+            os.system('cls||clear')
             data.append([measureTime, acc_x, acc_y, acc_z])
             time.sleep(sampling)
 
     # print("\033c")
-    # os.system('cls' if os.name == 'nt' else 'clear')
     t = []
     x = []
     y = []
@@ -149,3 +151,14 @@ for i in range(1, 100):
         with open(file, "a") as outfile:
             json.dump(wordsJson, outfile)
         break
+
+
+
+
+'''
+Instructions
+ssh pi@192.168.0.1 password : raspberry
+run everything with sudo
+
+winscp  - login as pi, write sudo su -c /usr/lib/sftp-server into sftp server options
+'''
