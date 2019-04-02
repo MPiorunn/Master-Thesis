@@ -26,6 +26,7 @@ words = ['need', 'look', 'melted', 'retire', 'fairies', 'cheat', 'acoustics', 'b
 
 
 def lowPassFilter(data, c=COEFFICIENTS_HIGH_05_HZ):
+
     f_d = [0, 0]
     for i in range(2, len(data)):
         f_d.append(
@@ -57,7 +58,7 @@ def dist(a, b, c):
 
 
 def get_y_rotation(x, y, z):
-    radians = math.atan2(x, dist(y, z))
+    radians = math.atan2(x, dist(y, zalskdjals ))
     return -math.degrees(radians)
 
 

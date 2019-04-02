@@ -43,7 +43,6 @@ def forgery():
 
 
 
-minimums = []
 maximums = []
 files = 11
 forgedFiles = 6
@@ -91,17 +90,3 @@ print("Median DTW : " + str(np.median(distances)))
 print(avgForgedDistances)
 writeTimes.sort()
 print(writeTimes)
-
-
-'''
-pomyśleć nad ideą rozpoznawania właściciela pisma ale zamiast podpisu odręcznego , 
-analizować po prostu jego pismo. Zebrać kilka patternów i polecieć dalej, hasłem ma być
-cokolwiek, napisane przez osobę któa chce się zaoutoryzować a my porównamy jej pismo do naszych patternó.
-poprosić o napisanie 10 wyrazów a potem złożyć z nich zdanie i postarać się rozpoznać indeksy wyrazów w zdaniu, albo i samo zdanie
-osoba robiąc enrollment wybiera sobie 10 wyrazów a jak się autoryzuje, to pisze zdanie z np. trzeba z tych wyrazów a my ich szukamy
-można też zrobić tak że im więcej szukanych wyrazów ktoś wpisze, to dostanie lepsze autoryzacje
-pattern to nie musi być linia ale zakres od-do, tutaj mogą dojść nam points of interese jeśli
-ustawimy minium na minumum, max na max a tutaj pasek jest cieniutki ;) to będzie moznaa wrzucić jako jakiś side note
-ograniczyć czas na aplikację , bo w pracy będą w tym  3-4 zdania :D
-ogólnie wygląda to w porządku, trzeba przerzucić pomysł na rozpoznawanie konkretnych wyrazów w zdaniu, podanych przez osobę przy rolloucie
-'''
