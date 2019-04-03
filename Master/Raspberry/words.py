@@ -1,4 +1,4 @@
-import smbus
+# import smbus
 import math
 import time
 import keyboard
@@ -9,13 +9,33 @@ import random
 
 matplotlib.use("AGG")
 import matplotlib.pyplot as plt
+
 # from scipy.fftpack import fft
 # from pymongo import MongoClient
 
 # client = MongoClient('localhost', 27017)
 
-# db = client.test_database
 
+# db = client.test_database
+from pynput import keyboard
+
+pressed = False
+
+
+def on_press(key):
+    global pressed, h
+    h = h + 1
+    print(pressed)
+
+
+def on_release(key):
+    global pressed
+    pressed = not pressed
+    print(pressed)
+
+
+listener = keyboard.Listener(on_press=on_press, on_release=on_release)
+listener.start()
 # Register
 power_mgmt_1 = 0x6b
 
@@ -26,7 +46,6 @@ words = ['need', 'look', 'melted', 'retire', 'fairies', 'cheat', 'acoustics', 'b
 
 
 def lowPassFilter(data, c=COEFFICIENTS_HIGH_05_HZ):
-
     f_d = [0, 0]
     for i in range(2, len(data)):
         f_d.append(
@@ -34,31 +53,32 @@ def lowPassFilter(data, c=COEFFICIENTS_HIGH_05_HZ):
     return f_d
 
 
-def read_byte(reg):
-    return bus.read_byte_data(ad, reg)
-
-
-def read_word(reg):
-    h = bus.read_byte_data(ad, reg)
-    l = bus.read_byte_data(ad, reg + 1)
-    value = (h << 8) + l
-    return value
-
-
-def read_word_2c(reg):
-    val = read_word(reg)
-    if val >= 0x8000:
-        return -((65535 - val) + 1)
-    else:
-        return val
-
-
+#
+#
+# def read_byte(reg):
+#     return bus.read_byte_data(ad, reg)
+#
+#
+# def read_word(reg):
+#     h = bus.read_byte_data(ad, reg)
+#     l = bus.read_byte_data(ad, reg + 1)
+#     value = (h << 8) + l
+#     return value
+#
+#
+# def read_word_2c(reg):
+#     val = read_word(reg)
+#     if val >= 0x8000:
+#         return -((65535 - val) + 1)
+#     else:
+#         return val
+#
 def dist(a, b, c):
     return math.sqrt((a * a) + (b * b) + (c * c))
 
 
 def get_y_rotation(x, y, z):
-    radians = math.atan2(x, dist(y, zalskdjals ))
+    radians = math.atan2(x, dist(y, zalskdjals))
     return -math.degrees(radians)
 
 
@@ -78,9 +98,9 @@ def do_sma(k, i):
     return (first + second + third) / 3
 
 
-bus = smbus.SMBus(1)
+# bus = smbus.SMBus(1)
 ad = 0x68
-bus.write_byte_data(ad, power_mgmt_1, 0)
+# bus.write_byte_data(ad, power_mgmt_1, 0)
 data = []
 sampling = 0.025
 print("\033c")
@@ -89,39 +109,29 @@ time.sleep(sampling)
 path = "data/"
 wordsJson = {}
 # try:
-for word in words:
-    pressed = False
+h = 0
+while h < len(words) - 1:
+    os.system('cls||clear')
+    print('Finished writing word : ' + words[h])
+    print('Click \'SPACE\' to write another word : ' + words[h + 1])
     while not pressed:
-        if keyboard.is_pressed('enter'):
-            print('Finished writing word : ' + word)
-            print('Click \'ENTER\' to write another word')
-            nextWord = False
-            time.sleep(.1)
-            while not nextWord:
-                if keyboard.is_pressed('enter'):
-                    nextWord = True
-            time.sleep(.1)
-            pressed = True
-        else:
-            measureTime = time.time() - startTime
-            # print("\033c")
-            print("Time : ", measureTime)
-            # acc_x = random.random()
-            acc_x = read_word_2c(0x3b) / 16384.0
-            # acc_y = random.random()
-            acc_y = read_word_2c(0x3d) / 16384.0
-            # acc_z = random.random()
-            acc_z = read_word_2c(0x3f) / 16384.0
+        measureTime = time.time() - startTime
+        # print("\033c")
+        print("Time : ", measureTime)
+        acc_x = random.random()
+        # acc_x = read_word_2c(0x3b) / 16384.0
+        acc_y = random.random()
+        # acc_y = read_word_2c(0x3d) / 16384.0
+        acc_z = random.random()
+        # acc_z = read_word_2c(0x3f) / 16384.0
 
-            print("Acc X : ", acc_x)
-            print("Acc Y : ", acc_y)
-            print("Acc Z : ", acc_z)
-            # os.system('cls' if os.name == 'nt' else 'clear')
-            os.system('cls||clear')
-            data.append([measureTime, acc_x, acc_y, acc_z])
-            time.sleep(sampling)
-
-    # print("\033c")
+        print("Acc X : ", acc_x)
+        print("Acc Y : ", acc_y)
+        print("Acc Z : ", acc_z)
+        # os.system('cls' if os.name == 'nt' else 'clear')
+        os.system('cls||clear')
+        data.append([measureTime, acc_x, acc_y, acc_z])
+        time.sleep(sampling)
     t = []
     x = []
     y = []
@@ -142,19 +152,18 @@ for word in words:
     for i in range(0, len(mag)):
         sma.append(do_sma(mag, i))
     jsone = {'t': t, 'sma': sma}
-    wordsJson[word] = jsone
+    wordsJson[words[h]] = jsone
 
 for i in range(1, 100):
+    print('saving')
     s = path + "fig(" + str(i) + ").png"
     exists = os.path.isfile(s)
     if not exists:
+        print('saving ' + s)
         file = path + "data(" + str(i) + ").json"
         with open(file, "a") as outfile:
             json.dump(wordsJson, outfile)
         break
-
-
-
 
 '''
 Instructions
