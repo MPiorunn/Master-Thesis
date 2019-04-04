@@ -24,17 +24,18 @@ pressed = False
 
 def on_press(key):
     global pressed, h
-    h = h + 1
-    print(pressed)
-
-
-def on_release(key):
-    global pressed
     pressed = not pressed
     print(pressed)
 
 
-listener = keyboard.Listener(on_press=on_press, on_release=on_release)
+# def on_release(key):
+#     global pressed
+#     pressed = not pressed
+#     print(pressed)
+
+
+# listener = keyboard.Listener(on_press=on_press, on_release=on_release)
+listener = keyboard.Listener(on_press=on_press)
 listener.start()
 # Register
 power_mgmt_1 = 0x6b
@@ -110,21 +111,24 @@ path = "data/"
 wordsJson = {}
 # try:
 h = 0
+
 while h < len(words) - 1:
-    os.system('cls||clear')
-    print('Finished writing word : ' + words[h])
-    print('Click \'SPACE\' to write another word : ' + words[h + 1])
+    while pressed:
+        print('Finished writing word : ' + words[h])
+        if h < len(words) - 1:
+            print('Click \'SPACE\' to write another word : ' + words[h + 1])
+        os.system('cls||clear')
+
     while not pressed:
         measureTime = time.time() - startTime
         # print("\033c")
-        print("Time : ", measureTime)
+        # print("Time : ", measureTime)
         acc_x = random.random()
         # acc_x = read_word_2c(0x3b) / 16384.0
         acc_y = random.random()
         # acc_y = read_word_2c(0x3d) / 16384.0
         acc_z = random.random()
         # acc_z = read_word_2c(0x3f) / 16384.0
-
         print("Acc X : ", acc_x)
         print("Acc Y : ", acc_y)
         print("Acc Z : ", acc_z)
@@ -132,6 +136,7 @@ while h < len(words) - 1:
         os.system('cls||clear')
         data.append([measureTime, acc_x, acc_y, acc_z])
         time.sleep(sampling)
+
     t = []
     x = []
     y = []
@@ -153,14 +158,13 @@ while h < len(words) - 1:
         sma.append(do_sma(mag, i))
     jsone = {'t': t, 'sma': sma}
     wordsJson[words[h]] = jsone
+    h = h + 1
 
 for i in range(1, 100):
-    print('saving')
     s = path + "fig(" + str(i) + ").png"
-    exists = os.path.isfile(s)
+    file = path + "data(" + str(i) + ").json"
+    exists = os.path.isfile(file)
     if not exists:
-        print('saving ' + s)
-        file = path + "data(" + str(i) + ").json"
         with open(file, "a") as outfile:
             json.dump(wordsJson, outfile)
         break
