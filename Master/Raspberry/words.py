@@ -161,8 +161,8 @@ while h < len(words) - 1:
     h = h + 1
 
 for i in range(1, 100):
-    s = path + "fig(" + str(i) + ").png"
-    file = path + "data(" + str(i) + ").json"
+    # s = path + "fig(" + str(i) + ").png"
+    file = path + "words(" + str(i) + ").json"
     exists = os.path.isfile(file)
     if not exists:
         with open(file, "a") as outfile:

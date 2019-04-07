@@ -1,15 +1,29 @@
 # import smbus
+from pymongo import MongoClient
+from pynput import keyboard
+# from scipy.fftpack import fft
 import math
 import time
 import os
 import json
-import matplotlib
+import random
 
-matplotlib.use("AGG")
-import matplotlib.pyplot as plt
-# from scipy.fftpack import fft
-from pymongo import MongoClient
+# import matplotlib
+# import matplotlib.pyplot as plt
 
+# matplotlib.use("AGG")
+
+pressed = False
+
+
+def on_press(key):
+    global pressed
+    pressed = not pressed
+    print(pressed)
+
+
+listener = keyboard.Listener(on_press=on_press)
+listener.start()
 # client = MongoClient('localhost', 27017)
 
 # db = client.test_database
@@ -22,7 +36,7 @@ COEFFICIENTS_HIGH_05_HZ = [1, -1.905384612118461, 0.910092542787947, 0.953986986
                            0.953986986993339]
 
 
-def fil(data, c=COEFFICIENTS_HIGH_05_HZ):
+def lowPassFilter(data, c=COEFFICIENTS_HIGH_05_HZ):
     f_d = [0, 0]
     for i in range(2, len(data)):
         f_d.append(
@@ -78,18 +92,25 @@ def do_sma(k, i):
 ad = 0x68
 # bus.write_byte_data(ad, power_mgmt_1, 0)
 data = []
+signaturesCount = 5
+signatures = {}
+signature = {}
 sampling = 0.025
-startTime = time.time()
 time.sleep(sampling)
 
-try:
-    while True:
+for j in range(0, signaturesCount):
+    startTime = time.time()
+    while pressed:
+        print('Click [SPACE} to write another word')
+        os.system('cls||clear')
+    while not pressed:
+        os.system('cls||clear')
         measureTime = time.time() - startTime
         print("Time : ", measureTime)
-        # acc_x = read_word_2c(0x3b) / 16384.0
         acc_x = random.random()
         acc_y = random.random()
         acc_z = random.random()
+        # acc_x = read_word_2c(0x3b) / 16384.0
         # acc_y = read_word_2c(0x3d) / 16384.0
         # acc_z = read_word_2c(0x3f) / 16384.0
 
@@ -97,12 +118,8 @@ try:
         print("Acc Y : ", acc_y)
         print("Acc Z : ", acc_z)
         data.append([measureTime, acc_x, acc_y, acc_z])
-
         time.sleep(sampling)
 
-        print("\033c")
-
-except KeyboardInterrupt:
     t = []
     x = []
     y = []
@@ -115,58 +132,69 @@ except KeyboardInterrupt:
         y.append(val[2])
         z.append(val[3])
 
-    x = fil(x)
-    y = fil(y)
-    z = fil(z)
+    x = lowPassFilter(x)
+    y = lowPassFilter(y)
+    z = lowPassFilter(z)
     for i in range(0, len(x)):
         mag.append(dist(x[i], y[i], z[i]))
     for i in range(0, len(mag)):
         sma.append(do_sma(mag, i))
-    plt.subplot(311)
-    plt.xlabel('Time [t]')
-    plt.plot(t, x)
-    plt.plot(t, y)
-    plt.plot(t, z)
-    plt.legend(['x', 'y', 'z'])
-    plt.ylim(-1.2, 1.2)
-    plt.subplot(312)
-    plt.xlabel('Time [t]')
-    plt.ylim(0, 2)
-    plt.plot(t, mag)
-    plt.legend(['mag'])
-    plt.subplot(313)
-    plt.xlabel('Time [t]')
-    plt.ylim(0, 2)
-    plt.plot(t, sma)
-    plt.legend(['sma'])
-    # plt.show()
-    MAG = {'Mag': mag}
-    SMA = {"SMA": sma}
+    signature = {'t': t, 'sma': sma}
+    signatures[j] = signature
 
-    '''
-    fft_mag = fft(mag)
-    plt.subplot(313)
-    plt.plot(fft_mag)
-    plt.xlabel('Freq [Hz]')
-    plt.ylabel('Amplitude')
-    plt.legend(['fft'])
-    '''
-    path = "JA/"
-    for i in range(1, 100):
+path = "signatures"
+for i in range(1, 100):
+    # s = path + "/fig(" + str(i) + ").png"
+    file = path + "/signature(" + str(i) + ").json"
+    exists = os.path.isfile(file)
+    if not exists:
+        with open(file, "a") as outfile:
+            json.dump(signatures, outfile)
+        break
+'''
+plt.subplot(311)
+plt.xlabel('Time [t]')
+plt.plot(t, x)
+plt.plot(t, y)
+plt.plot(t, z)
+plt.legend(['x', 'y', 'z'])
+plt.ylim(-1.2, 1.2)
+plt.subplot(312)
+plt.xlabel('Time [t]')
+plt.ylim(0, 2)
+plt.plot(t, mag)
+plt.legend(['mag'])
+plt.subplot(313)
+plt.xlabel('Time [t]')
+plt.ylim(0, 2)
+plt.plot(t, sma)
+plt.legend(['sma'])
+# plt.show()
+MAG = {'Mag': mag}
+SMA = {"SMA": sma}
+
+fft_mag = fft(mag)
+plt.subplot(313)
+plt.plot(fft_mag)
+plt.xlabel('Freq [Hz]')
+plt.ylabel('Amplitude')
+plt.legend(['fft'])
+path = "JA/"
+for i in range(1, 100):
+    s = path + "fig(" + str(i) + ").png"
+    exists = os.path.isfile(s)
+    if not exists:
+        txt_s = path + "data(" + str(i) + ").txt"
+        txt = open(txt_s, "a")
+        txt.write("t" + json.dumps(t))
+        txt.write("\n")
+        txt.write("MAG " + json.dumps(mag))
+        txt.write("\n")
+        txt.write("SMA " + json.dumps(sma))
+        txt.close()
         s = path + "fig(" + str(i) + ").png"
-        exists = os.path.isfile(s)
-        if not exists:
-            txt_s = path + "data(" + str(i) + ").txt"
-            txt = open(txt_s, "a")
-            txt.write("t" + json.dumps(t))
-            txt.write("\n")
-            txt.write("MAG " + json.dumps(mag))
-            txt.write("\n")
-            txt.write("SMA " + json.dumps(sma))
-            txt.close()
-            s = path + "fig(" + str(i) + ").png"
-            print(s)
-            plt.savefig(s)
-            break
+        print(s)
+        plt.savefig(s)
+        break
 
-    pass
+'''
