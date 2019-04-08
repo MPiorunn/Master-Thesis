@@ -1,4 +1,4 @@
-# import smbus
+import smbus
 from pymongo import MongoClient
 from pynput import keyboard
 # from scipy.fftpack import fft
@@ -44,23 +44,23 @@ def lowPassFilter(data, c=COEFFICIENTS_HIGH_05_HZ):
     return f_d
 
 
-# def read_byte(reg):
-#     return bus.read_byte_data(ad, reg)
+def read_byte(reg):
+    return bus.read_byte_data(ad, reg)
 
 
-# def read_word(reg):
-#     h = bus.read_byte_data(ad, reg)
-#     l = bus.read_byte_data(ad, reg + 1)
-#     value = (h << 8) + l
-#     return value
+def read_word(reg):
+    h = bus.read_byte_data(ad, reg)
+    l = bus.read_byte_data(ad, reg + 1)
+    value = (h << 8) + l
+    return value
 
 
-# def read_word_2c(reg):
-#     val = read_word(reg)
-#     if val >= 0x8000:
-#         return -((65535 - val) + 1)
-#     else:
-#         return val
+def read_word_2c(reg):
+    val = read_word(reg)
+    if val >= 0x8000:
+        return -((65535 - val) + 1)
+    else:
+        return val
 
 
 def dist(a, b, c):
@@ -88,9 +88,9 @@ def do_sma(k, i):
     return (first + second + third) / 3
 
 
-# bus = smbus.SMBus(1)
+bus = smbus.SMBus(1)
 ad = 0x68
-# bus.write_byte_data(ad, power_mgmt_1, 0)
+bus.write_byte_data(ad, power_mgmt_1, 0)
 data = []
 signaturesCount = 5
 signatures = {}
@@ -107,12 +107,12 @@ for j in range(0, signaturesCount):
         os.system('cls||clear')
         measureTime = time.time() - startTime
         print("Time : ", measureTime)
-        acc_x = random.random()
-        acc_y = random.random()
-        acc_z = random.random()
-        # acc_x = read_word_2c(0x3b) / 16384.0
-        # acc_y = read_word_2c(0x3d) / 16384.0
-        # acc_z = read_word_2c(0x3f) / 16384.0
+        # acc_x = random.random()
+        # acc_y = random.random()
+        # acc_z = random.random()
+        acc_x = read_word_2c(0x3b) / 16384.0
+        acc_y = read_word_2c(0x3d) / 16384.0
+        acc_z = read_word_2c(0x3f) / 16384.0
 
         print("Acc X : ", acc_x)
         print("Acc Y : ", acc_y)
