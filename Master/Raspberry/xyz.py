@@ -1,5 +1,5 @@
 import smbus
-from pymongo import MongoClient
+# from pymongo import MongoClient
 from pynput import keyboard
 # from scipy.fftpack import fft
 import math
@@ -13,7 +13,7 @@ import random
 
 # matplotlib.use("AGG")
 
-pressed = False
+pressed = True
 
 
 def on_press(key):
@@ -139,13 +139,14 @@ for j in range(0, signaturesCount):
         mag.append(dist(x[i], y[i], z[i]))
     for i in range(0, len(mag)):
         sma.append(do_sma(mag, i))
-    signature = {'t': t, 'sma': sma}
+    # signature = {'t': t, 'sma': sma} HERE's da change
+    signature = {'t': t, 'x': x, 'y': y, 'z': z, 'sma' : sma}
     signatures[j] = signature
 
-path = "signatures"
+path = "xyz"
 for i in range(1, 100):
     # s = path + "/fig(" + str(i) + ").png"
-    file = path + "/signature(" + str(i) + ").json"
+    file = path + "/xyz(" + str(i) + ").json"
     exists = os.path.isfile(file)
     if not exists:
         with open(file, "a") as outfile:
