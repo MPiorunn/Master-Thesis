@@ -13,4 +13,12 @@ for i in range(1, 11):
         file = json.load(f)
         data.append(file)
 
-print(data)
+model = data[0]
+first = model[str(0)]
+
+plt.plot(first['t'], first['x'], 'g', label='x')
+plt.plot(first['t'], first['y'], 'r', label='y')
+plt.plot(first['t'], first['z'], 'y', label='z')
+plt.plot(first['t'], first['sma'], 'b', label='sma')
+plt.legend(loc='upper left')
+plt.show()
