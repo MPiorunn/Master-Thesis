@@ -13,8 +13,8 @@ for i in range(1, 11):
         file = json.load(f)
         data.append(file)
 
-model = data[0]
-first = model[str(0)]
+model = data[1]
+first = model[str(1)]
 
 plt.plot(first['t'], first['x'], 'g', label='x')
 plt.plot(first['t'], first['y'], 'r', label='y')

@@ -97,12 +97,12 @@ signatures = {}
 signature = {}
 sampling = 0.025
 time.sleep(sampling)
-
+startTime = time.time()
 for j in range(0, signaturesCount):
-    startTime = time.time()
     while pressed:
         print('Click [SPACE} to write another word')
         os.system('cls||clear')
+        startTime = time.time()
     while not pressed:
         os.system('cls||clear')
         measureTime = time.time() - startTime
