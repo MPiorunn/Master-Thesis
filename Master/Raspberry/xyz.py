@@ -140,13 +140,17 @@ for j in range(0, signaturesCount):
     for i in range(0, len(mag)):
         sma.append(do_sma(mag, i))
     # signature = {'t': t, 'sma': sma} HERE's da change
-    signature = {'t': t, 'x': x, 'y': y, 'z': z, 'sma' : sma}
+    signature = {'t': t, 'x': x, 'y': y, 'z': z, 'sma': sma}
     signatures[j] = signature
+    data = []
 
 path = "xyz"
+# path = "ania"
+# path = "mrozek"
+# path = "maciek"
 for i in range(1, 100):
     # s = path + "/fig(" + str(i) + ").png"
-    file = path + "/xyz(" + str(i) + ").json"
+    file = path + "/" + path + "(" + str(i) + ").json"
     exists = os.path.isfile(file)
     if not exists:
         with open(file, "a") as outfile:
