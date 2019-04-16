@@ -6,6 +6,12 @@ import json
 
 friends = ['ania', 'bartek', 'maciek', 'mrozek', 'piorun']
 
+fakes_map = {'ania': 'piorun',
+             'piorun': 'mrozek',
+             'bartek': 'ania',
+             'mrozek': 'piorun',
+             'maciek': 'bartek'}
+
 
 def load_data(path):
     tmp = []
@@ -18,30 +24,54 @@ def load_data(path):
 
 
 def time_analysis(datasets):
+    tmp = []
     for dataset in datasets:
-        print()
         for file in dataset:
-            print()
             for signature in file:
-                l = len(file[signature]['t'])
-                print(file[signature]['t'][l - 1])
+                for name in signature:
+                    l = len(file[name]['t'])
+                    tmp.append(file[name]['t'][l - 1])
+    return tmp
 
 
-data = []
+data = {}
 for friend in friends:
-    data.append(load_data(friend))
+    data[friend] = load_data(friend)
+# data['xyz'] = load_data('xyz')
+# times = time_analysis(data)
+# print(times)
+# ania = data['ania'][0]
+# ania = data['piorun'][0]
+# ania = data['maciek'][0]
+# ania = data['mrozek'][0]
+# ania = data['bartek'][0]
 
-time_analysis(data)
+# signatures = data['ania']
+# signatures = data['mrozek']
+# signatures = data['maciek']
+# signatures = data['bartek']
+signatures = data['piorun']
+# signatures = data['xyz']
+
+for j in range(2, 3):
+    set = signatures[j]
+    for i in set:
+        t = set[i]['t']
+        x = set[i]['sma']
+        plt.plot(t, x, marker='o', linestyle='--', color='r')
+
 # for i in range(0, 5):
 #     sign = model[str(i)]
 #     plt.subplot(5, 1, i + 1)
 
 # sign = model[str(1)]
-# plt.plot(sign['t'], sign['x'], 'g', label='x')
 # plt.plot(sign['t'], sign['y'], 'r', label='y')
 # plt.plot(sign['t'], sign['z'], 'y', label='z')
 # plt.plot(sign['t'], sign['sma'], 'b', label='sma')
 #
-# plt.legend(loc='upper left')
-# plt.show()
-#
+mng = plt.get_current_fig_manager()
+mng.full_screen_toggle()
+plt.ylim(0, 2.5)
+plt.xlim(0, 5)
+plt.legend(loc='upper left')
+plt.show()
