@@ -44,6 +44,7 @@ def removeOutliers(someData):
     maxI = averages.index(max(averages))
     someData.pop(str(minI))
     someData.pop(str(maxI))
+    print('Removed min : ' + str(minI) + ' and max : ' + str(maxI))
     return someData
 
 
@@ -53,7 +54,7 @@ for friend in friends:
 # data['xyz'] = load_data('xyz')
 # times = time_analysis(data)
 # print(times)
-# ania = data['ania'][0]
+ania = data['ania'][0]
 # ania = data['piorun'][0]
 # ania = data['maciek'][0]
 # ania = data['mrozek'][0]
@@ -62,7 +63,7 @@ for friend in friends:
 # signatures = data['ania']
 # signatures = data['mrozek']
 # signatures = data['maciek']
-signatures = removeOutliers(data['bartek'][0])
+signatures = removeOutliers(ania)
 # signatures = data['piorun']
 # signatures = data['xyz']
 results = {'pairs': []}
