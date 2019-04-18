@@ -3,6 +3,8 @@ import numpy as np
 from fastdtw import fastdtw
 from scipy import signal
 import json
+import statistics
+from pandas.io.json import json_normalize
 
 friends = ['ania', 'bartek', 'maciek', 'mrozek', 'piorun']
 
@@ -15,7 +17,7 @@ fakes_map = {'ania': 'piorun',
 
 def load_data(path):
     tmp = []
-    for i in range(1, 4):
+    for i in range(1, 2):
         fullPath = 'Raspberry/' + path + '/' + path
         name = fullPath + '(' + str(i) + ').json'
         with open(name) as f:
@@ -34,6 +36,17 @@ def time_analysis(datasets):
     return tmp
 
 
+def removeOutliers(someData):
+    averages = []
+    for d in someData:
+        averages.append(statistics.mean(someData[d]['sma']))
+    minI = averages.index(min(averages))
+    maxI = averages.index(max(averages))
+    someData.pop(str(minI))
+    someData.pop(str(maxI))
+    return someData
+
+
 data = {}
 for friend in friends:
     data[friend] = load_data(friend)
@@ -49,17 +62,34 @@ for friend in friends:
 # signatures = data['ania']
 # signatures = data['mrozek']
 # signatures = data['maciek']
-# signatures = data['bartek']
-signatures = data['piorun']
+signatures = removeOutliers(data['bartek'][0])
+# signatures = data['piorun']
 # signatures = data['xyz']
+results = {'pairs': []}
 
-for j in range(2, 3):
-    set = signatures[j]
-    for i in set:
-        t = set[i]['t']
-        x = set[i]['sma']
-        plt.plot(t, x, marker='o', linestyle='--', color='r')
+for i in signatures:
+    x = signatures[str(i)]['t']
+    y = signatures[str(i)]['sma']
+    for a in range(0, len(x)):
+        results['pairs'].append({'x': x[a], 'y': y[a]})
+        # plt.plot(t, x, marker='o', linestyle='--', color='r')
 
+xval = []
+yval = []
+
+for result in results:
+    xval.append(result)
+    yval.append(results[result])
+
+sorted(results['pairs'], key=lambda i: i['x'])
+
+xy = []
+yy = []
+for res in results['pairs']:
+    xy.append(res['x'])
+    yy.append(res['y'])
+
+plt.plot(xy, yy, marker='o', linestyle='--', color='r')
 # for i in range(0, 5):
 #     sign = model[str(i)]
 #     plt.subplot(5, 1, i + 1)
@@ -69,9 +99,14 @@ for j in range(2, 3):
 # plt.plot(sign['t'], sign['z'], 'y', label='z')
 # plt.plot(sign['t'], sign['sma'], 'b', label='sma')
 #
-mng = plt.get_current_fig_manager()
-mng.full_screen_toggle()
+# mng = plt.get_current_fig_manager()
+# mng.full_screen_toggle()
 plt.ylim(0, 2.5)
 plt.xlim(0, 5)
 plt.legend(loc='upper left')
 plt.show()
+
+'''
+plany
+- przedzialy
+- policzyc DTW - najmniejszy problem w sumie, wazniejsze sa przedzialy'''
