@@ -54,9 +54,9 @@ for friend in friends:
 # data['xyz'] = load_data('xyz')
 # times = time_analysis(data)
 # print(times)
-ania = data['ania'][0]
+# ania = data['ania'][0]
 # ania = data['piorun'][0]
-# ania = data['maciek'][0]
+ania = data['maciek'][0]
 # ania = data['mrozek'][0]
 # ania = data['bartek'][0]
 
@@ -64,6 +64,7 @@ ania = data['ania'][0]
 # signatures = data['mrozek']
 # signatures = data['maciek']
 signatures = removeOutliers(ania)
+# signatures = ania
 # signatures = data['piorun']
 # signatures = data['xyz']
 results = {'pairs': []}
@@ -71,9 +72,14 @@ results = {'pairs': []}
 for i in signatures:
     x = signatures[str(i)]['t']
     y = signatures[str(i)]['sma']
+    t = 0.0
+    #  kontrola czestosci probkowania
+    ts = []
     for a in range(0, len(x)):
-        results['pairs'].append({'x': x[a], 'y': y[a]})
-        # plt.plot(t, x, marker='o', linestyle='--', color='r')
+        ts.append(t)
+        results['pairs'].append({'x': t, 'y': y[a]})
+        t = round((t + 0.025), 3)
+    plt.plot(ts, y, marker='o', linestyle='--', color='r')
 
 xval = []
 yval = []
@@ -82,6 +88,7 @@ for result in results:
     xval.append(result)
     yval.append(results[result])
 
+# Sort all points by time. Does not affect the chart
 sorted(results['pairs'], key=lambda i: i['x'])
 
 xy = []
@@ -90,7 +97,7 @@ for res in results['pairs']:
     xy.append(res['x'])
     yy.append(res['y'])
 
-plt.plot(xy, yy, marker='o', linestyle='--', color='r')
+# plt.plot(xy, yy, marker='o', linestyle='--')
 # for i in range(0, 5):
 #     sign = model[str(i)]
 #     plt.subplot(5, 1, i + 1)
@@ -110,4 +117,5 @@ plt.show()
 '''
 plany
 - przedzialy
-- policzyc DTW - najmniejszy problem w sumie, wazniejsze sa przedzialy'''
+- policzyc DTW - najmniejszy problem w sumie, wazniejsze sa przedzialy
+'''
