@@ -37,8 +37,11 @@ def time_analysis(datasets):
 
 
 def removeOutliers(someData):
+    global maxLen
     averages = []
     for d in someData:
+        if len(someData[d]['sma']) > maxLen:
+            maxLen = len(someData[d]['sma'])
         averages.append(statistics.mean(someData[d]['sma']))
     minI = averages.index(min(averages))
     maxI = averages.index(max(averages))
@@ -54,11 +57,13 @@ for friend in friends:
 # data['xyz'] = load_data('xyz')
 # times = time_analysis(data)
 # print(times)
+maxLen = 0
+
 # ania = data['ania'][0]
 # ania = data['piorun'][0]
-ania = data['maciek'][0]
+# ania = data['maciek'][0]
 # ania = data['mrozek'][0]
-# ania = data['bartek'][0]
+ania = data['bartek'][0]
 
 # signatures = data['ania']
 # signatures = data['mrozek']
@@ -69,25 +74,47 @@ signatures = removeOutliers(ania)
 # signatures = data['xyz']
 results = {'pairs': []}
 
+avgs = []
 for i in signatures:
     x = signatures[str(i)]['t']
     y = signatures[str(i)]['sma']
     t = 0.0
     #  kontrola czestosci probkowania
     ts = []
+    avg = [0] * maxLen
+    # znalezienie usrednionego wykresu zeby zrobic tasme
     for a in range(0, len(x)):
         ts.append(t)
         results['pairs'].append({'x': t, 'y': y[a]})
         t = round((t + 0.025), 3)
+        avg[a] = y[a]
+        # results['pairs'].append({'x': x[a], 'y': y[a]})
+    avgs.append(avg)
+    # plt.plot(x, y, marker='o', linestyle='--', color='r')
     plt.plot(ts, y, marker='o', linestyle='--', color='r')
+
+averageChart = [0] * maxLen
+# for av in avgs:
 
 xval = []
 yval = []
+# stworzenie tablicy z srednimi wartosciami
+for av in avgs:
+    for i in range(0, len(av)):
+        averageChart[i] += av[i]
+
+ts = [0] * len(averageChart)
+ts[0] = 0
+for i in range(0, len(averageChart)):
+    averageChart[i] /= 8
+    if i > 0:
+        ts[i] = ts[i - 1] + 0.025
 
 for result in results:
     xval.append(result)
     yval.append(results[result])
 
+plt.plot(ts, averageChart, marker='o', linestyle='--', color='b', markersize=60)
 # Sort all points by time. Does not affect the chart
 sorted(results['pairs'], key=lambda i: i['x'])
 
@@ -110,7 +137,7 @@ for res in results['pairs']:
 # mng = plt.get_current_fig_manager()
 # mng.full_screen_toggle()
 plt.ylim(0, 2.5)
-plt.xlim(0, 5)
+plt.xlim(0, 2.5)
 plt.legend(loc='upper left')
 plt.show()
 
