@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 from fastdtw import fastdtw
-from scipy import signal
+import scipy
 import json
 import statistics
 from pandas.io.json import json_normalize
@@ -51,6 +51,10 @@ def remove_outliers(someData):
     return someData
 
 
+def calculate_area(y, dx):
+    return scipy.trapz(y, dx=dx)
+
+
 data = {}
 for friend in friends:
     data[friend] = load_data(friend)
@@ -65,15 +69,14 @@ maxLen = 0
 # ania = data['maciek'][0]
 chart = data['mrozek'][0]
 # ania = data['bartek'][0]
-
 # remove outliers or not?
 signatures = remove_outliers(chart)
 # signatures = ania
-
 # used to group all charts into one dataset
 results = {'pairs': []}
 
 avgs = []
+dt = 0.025
 for i in signatures:
     x = signatures[str(i)]['t']
     y = signatures[str(i)]['sma']
@@ -81,11 +84,12 @@ for i in signatures:
     #  kontrola czestosci probkowania
     ts = []
     avg = [0] * maxLen
+    print(calculate_area(y, dt))
     # znalezienie usrednionego wykresu zeby zrobic tasme
     for a in range(0, len(x)):
         ts.append(t)
         results['pairs'].append({'x': t, 'y': y[a]})
-        t = round((t + 0.025), 3)
+        t = round((t + dt), 3)
         avg[a] = y[a]
         # results['pairs'].append({'x': x[a], 'y': y[a]})
     avgs.append(avg)
@@ -133,4 +137,3 @@ plt.ylim(0, 2.5)
 plt.xlim(0, 2.5)
 plt.legend(loc='upper left')
 plt.show()
-
