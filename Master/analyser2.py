@@ -55,6 +55,14 @@ def calculate_area(y, dx):
     return scipy.trapz(y, dx=dx)
 
 
+def chart_coverage(fx, up, down):
+    matched = 0
+    for i in range(0, len(fx)):
+        if up[i] > fx[i] > down[i]:
+            matched += 1
+    return matched / len(f)
+
+
 data = {}
 for friend in friends:
     data[friend] = load_data(friend)
@@ -76,63 +84,64 @@ signatures = remove_outliers(chart)
 results = {'pairs': []}
 
 avgs = []
+#  sampling frequency
 dt = 0.025
 for i in signatures:
     x = signatures[str(i)]['t']
     y = signatures[str(i)]['sma']
     t = 0.0
-    #  kontrola czestosci probkowania
     ts = []
     avg = [0] * maxLen
-    print(calculate_area(y, dt))
-    # znalezienie usrednionego wykresu zeby zrobic tasme
     for a in range(0, len(x)):
         ts.append(t)
-        results['pairs'].append({'x': t, 'y': y[a]})
         t = round((t + dt), 3)
         avg[a] = y[a]
+        # results['pairs'].append({'x': t, 'y': y[a]})
         # results['pairs'].append({'x': x[a], 'y': y[a]})
     avgs.append(avg)
     # plt.plot(x, y, marker='o', linestyle='--', color='r')
     plt.plot(ts, y, marker='o', linestyle='--', color='r')
 
 averageChart = [0] * maxLen
-# for av in avgs:
 
-xval = []
-yval = []
-# stworzenie tablicy z srednimi wartosciami
+# average values array
 for av in avgs:
     for i in range(0, len(av)):
         averageChart[i] += av[i]
 
+# time series
 ts = [0] * len(averageChart)
 ts[0] = 0
+# arrays with upper and lower boundaries
 interval = 0.1
 upperBorder = [0] * len(averageChart)
 lowerBorder = [0] * len(averageChart)
-for i in range(0, len(averageChart)):
+# create average chart with boundaries
+for i in range(1, len(averageChart)):
     averageChart[i] /= 8
     upperBorder[i] = averageChart[i] + interval
     lowerBorder[i] = averageChart[i] - interval
-    if i > 0:
-        ts[i] = ts[i - 1] + 0.025
+    ts[i] = ts[i - 1] + 0.025
 
-for result in results:
-    xval.append(result)
-    yval.append(results[result])
+# print charts
 
 plt.plot(ts, upperBorder, marker='o', linestyle='--', color='y')
 plt.plot(ts, averageChart, marker='o', linestyle='--', color='b')
 plt.plot(ts, lowerBorder, marker='o', linestyle='--', color='g')
-# Sort all points by time. Does not affect the chart
-sorted(results['pairs'], key=lambda i: i['x'])
 
-xy = []
-yy = []
-for res in results['pairs']:
-    xy.append(res['x'])
-    yy.append(res['y'])
+# sorted(results['pairs'], key=lambda i: i['x'])
+
+# xval = []
+# yval = []
+# for result in results:
+#     xval.append(result)
+#     yval.append(results[result])
+
+# xy = []
+# yy = []
+# for res in results['pairs']:
+#     xy.append(res['x'])
+#     yy.append(res['y'])
 plt.ylim(0, 2.5)
 plt.xlim(0, 2.5)
 plt.legend(loc='upper left')
