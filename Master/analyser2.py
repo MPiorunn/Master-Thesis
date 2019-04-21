@@ -58,9 +58,9 @@ def calculate_area(y, dx):
 def chart_coverage(fx, up, down):
     matched = 0
     for i in range(0, len(fx)):
-        if up[i] > fx[i] > down[i]:
+        if up[i] >= fx[i] >= down[i]:
             matched += 1
-    return matched / len(f)
+    return matched / len(fx)
 
 
 data = {}
