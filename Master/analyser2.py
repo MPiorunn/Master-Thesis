@@ -72,14 +72,14 @@ for friend in friends:
 maxLen = 0
 
 # which friend to check
-# ania = data['ania'][0]
-# ania = data['piorun'][0]
-# ania = data['maciek'][0]
-chart = data['mrozek'][0]
-# ania = data['bartek'][0]
+# chart = data['ania'][0]
+# chart = data['piorun'][0]
+# chart = data['maciek'][0]
+# chart = data['mrozek'][0]
+# chart = data['bartek'][0]
 # remove outliers or not?
 signatures = remove_outliers(chart)
-# signatures = ania
+# signatures = chart
 # used to group all charts into one dataset
 results = {'pairs': []}
 
@@ -122,6 +122,17 @@ for i in range(1, len(averageChart)):
     upperBorder[i] = averageChart[i] + interval
     lowerBorder[i] = averageChart[i] - interval
     ts[i] = ts[i - 1] + 0.025
+
+# Calculate coverage for each chart
+averageCoverage = 0
+for i in signatures:
+    y = signatures[str(i)]['sma']
+    coverage = chart_coverage(y, upperBorder, lowerBorder)
+    print(coverage)
+    averageCoverage += coverage
+
+averageCoverage /= 8
+print("Average coverage : " + str(averageCoverage))
 
 # print charts
 
