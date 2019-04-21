@@ -36,7 +36,7 @@ def time_analysis(datasets):
     return tmp
 
 
-def removeOutliers(someData):
+def remove_outliers(someData):
     global maxLen
     averages = []
     for d in someData:
@@ -47,7 +47,7 @@ def removeOutliers(someData):
     maxI = averages.index(max(averages))
     someData.pop(str(minI))
     someData.pop(str(maxI))
-    print('Removed min : ' + str(minI) + ' and max : ' + str(maxI))
+    # print('Removed min : ' + str(minI) + ' and max : ' + str(maxI))
     return someData
 
 
@@ -59,19 +59,18 @@ for friend in friends:
 # print(times)
 maxLen = 0
 
+# which friend to check
 # ania = data['ania'][0]
 # ania = data['piorun'][0]
 # ania = data['maciek'][0]
-# ania = data['mrozek'][0]
-ania = data['bartek'][0]
+chart = data['mrozek'][0]
+# ania = data['bartek'][0]
 
-# signatures = data['ania']
-# signatures = data['mrozek']
-# signatures = data['maciek']
-signatures = removeOutliers(ania)
+# remove outliers or not?
+signatures = remove_outliers(chart)
 # signatures = ania
-# signatures = data['piorun']
-# signatures = data['xyz']
+
+# used to group all charts into one dataset
 results = {'pairs': []}
 
 avgs = []
@@ -105,8 +104,13 @@ for av in avgs:
 
 ts = [0] * len(averageChart)
 ts[0] = 0
+interval = 0.1
+upperBorder = [0] * len(averageChart)
+lowerBorder = [0] * len(averageChart)
 for i in range(0, len(averageChart)):
     averageChart[i] /= 8
+    upperBorder[i] = averageChart[i] + interval
+    lowerBorder[i] = averageChart[i] - interval
     if i > 0:
         ts[i] = ts[i - 1] + 0.025
 
@@ -114,7 +118,9 @@ for result in results:
     xval.append(result)
     yval.append(results[result])
 
-plt.plot(ts, averageChart, marker='o', linestyle='--', color='b', markersize=60)
+plt.plot(ts, upperBorder, marker='o', linestyle='--', color='y')
+plt.plot(ts, averageChart, marker='o', linestyle='--', color='b')
+plt.plot(ts, lowerBorder, marker='o', linestyle='--', color='g')
 # Sort all points by time. Does not affect the chart
 sorted(results['pairs'], key=lambda i: i['x'])
 
@@ -123,26 +129,8 @@ yy = []
 for res in results['pairs']:
     xy.append(res['x'])
     yy.append(res['y'])
-
-# plt.plot(xy, yy, marker='o', linestyle='--')
-# for i in range(0, 5):
-#     sign = model[str(i)]
-#     plt.subplot(5, 1, i + 1)
-
-# sign = model[str(1)]
-# plt.plot(sign['t'], sign['y'], 'r', label='y')
-# plt.plot(sign['t'], sign['z'], 'y', label='z')
-# plt.plot(sign['t'], sign['sma'], 'b', label='sma')
-#
-# mng = plt.get_current_fig_manager()
-# mng.full_screen_toggle()
 plt.ylim(0, 2.5)
 plt.xlim(0, 2.5)
 plt.legend(loc='upper left')
 plt.show()
 
-'''
-plany
-- przedzialy
-- policzyc DTW - najmniejszy problem w sumie, wazniejsze sa przedzialy
-'''
