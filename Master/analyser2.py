@@ -76,6 +76,7 @@ def chart_coverage(fx, up, down):
             matched += 1
     return matched / len(fx)
 
+
 def create_borders(base, interval):
     upperBorder = [0] * len(base)
     lowerBorder = [0] * len(base)
@@ -84,7 +85,8 @@ def create_borders(base, interval):
         upperBorder[i] = base[i] + interval
         lowerBorder[i] = base[i] - interval
         ts[i] = ts[i - 1] + freq
-    return upperBorder,lowerBorder
+    return upperBorder, lowerBorder
+
 
 def get_signatures_areas(signatures):
     areas = []
@@ -103,14 +105,16 @@ def get_signatures_coverage(signatures):
         avg += coverage
     return avg / chart_divider
 
+
 def calculate_areas_changes(areas):
     changes = []
     for areaSet in areas:
+        sign_changes = []
         for i in range(1, len(areaSet)):
-            print(areaSet[i]/areaSet[i-1])
-        print()
-        print()
+            sign_changes.append(areaSet[i] / areaSet[i - 1])
+        changes.append(sign_changes)
     return changes
+
 
 # globals
 # maximum data pieces in set of charts
@@ -124,7 +128,6 @@ freq = 0.025
 # into how many parts do we divide each chart?
 global chart_divider
 chart_divider = 8
-
 
 data = {}
 # for friend in friends:
@@ -161,7 +164,7 @@ for i in signatures:
         avg[a] = y[a]
     avgs.append(avg)
     # plt.plot(x, y, marker='o', linestyle='--', color='r')
-    plt.plot(ts, y, marker='o', linestyle='--', color='r')
+    # plt.plot(ts, y, marker='o', linestyle='--', color='r')
 
 averageChart = [0] * maxLen
 
@@ -177,7 +180,7 @@ ts[0] = 0
 interval = 0.1
 
 # create average chart with boundaries
-(upperBorder, lowerBorder) = create_borders(averageChart,interval)
+(upperBorder, lowerBorder) = create_borders(averageChart, interval)
 
 # Calculate coverage for each chart
 # divide charts into pieces and calculate area under the chart
@@ -189,11 +192,14 @@ areas = get_signatures_areas(signatures)
 changes = calculate_areas_changes(areas)
 # print charts
 
-plt.plot(ts, upperBorder, marker='o', linestyle='--', color='y')
-plt.plot(ts, averageChart, marker='o', linestyle='--', color='b')
-plt.plot(ts, lowerBorder, marker='o', linestyle='--', color='g')
+# plt.plot(ts, upperBorder, marker='o', linestyle='--', color='y')
+# plt.plot(ts, averageChart, marker='o', linestyle='--', color='b')
+# plt.plot(ts, lowerBorder, marker='o', linestyle='--', color='g')
+change_x = list(range(1, chart_divider))
+for change_y in changes:
+    plt.plot(change_x, change_y, marker='o', linestyle='--')
 
-plt.ylim(0, 2.5)
-plt.xlim(0, 2.5)
+# plt.ylim(0, 2.5)
+# plt.xlim(0, 2.5)
 plt.legend(loc='upper left')
-# plt.show()
+plt.show()
