@@ -19,8 +19,8 @@ fakes_map = {'ania': 'piorun',
 def load_data(path):
     tmp = []
     for i in range(1, 2):
-        fullPath = path + '/' + path
-        name = fullPath + '' + str(i) + '.json'
+        fullPath = 'Raspberry/' + path + '/' + path
+        name = fullPath + '(' + str(i) + ').json'
         with open(name) as f:
             tmp.append(json.load(f))
     return tmp
