@@ -116,6 +116,11 @@ def calculate_areas_changes(areas):
     return changes
 
 
+def calculate_dtw(y1, y2):
+    distance, path = fastdtw(y1, y2)
+    return distance
+
+
 # globals
 # maximum data pieces in set of charts
 global maxLen
@@ -130,18 +135,14 @@ global chart_divider
 chart_divider = 8
 
 data = {}
-# for friend in friends:
-# data[friend] = load_data(friend)
-# data['xyz'] = load_data('xyz')
-data['ania'] = load_data('ania')
-# times = time_analysis(data)
-# print(times)
+for friend in friends:
+    data[friend] = load_data(friend)
 # which friend to check
-chart = data['ania'][0]
-# chart = data['piorun'][0]
-# chart = data['maciek'][0]
-# chart = data['mrozek'][0]
-# chart = data['bartek'][0]
+chart = load_data('ania')[0]
+# chart = load_data('piorun')[0]
+# chart = load_data('maciek')[0]
+# chart = load_data('mrozek')[0]
+# chart = load_data('bartek')[0]
 
 # remove outliers or not?
 signatures = remove_outliers(chart)
@@ -152,6 +153,8 @@ signatures = remove_outliers(chart)
 avgs = []
 #  sampling frequency
 dt = 0.025
+plt.subplot(2, 1, 1)
+
 for i in signatures:
     x = signatures[str(i)]['t']
     y = signatures[str(i)]['sma']
@@ -164,7 +167,7 @@ for i in signatures:
         avg[a] = y[a]
     avgs.append(avg)
     # plt.plot(x, y, marker='o', linestyle='--', color='r')
-    # plt.plot(ts, y, marker='o', linestyle='--', color='r')
+    plt.plot(ts, y, marker='o', linestyle='--', color='r')
 
 averageChart = [0] * maxLen
 
@@ -192,14 +195,28 @@ areas = get_signatures_areas(signatures)
 changes = calculate_areas_changes(areas)
 # print charts
 
-# plt.plot(ts, upperBorder, marker='o', linestyle='--', color='y')
-# plt.plot(ts, averageChart, marker='o', linestyle='--', color='b')
-# plt.plot(ts, lowerBorder, marker='o', linestyle='--', color='g')
+plt.ylim(0, 2.5)
+plt.xlim(0, 2.5)
+plt.plot(ts, upperBorder, marker='o', linestyle='--', color='y')
+plt.plot(ts, averageChart, marker='o', linestyle='--', color='b')
+plt.plot(ts, lowerBorder, marker='o', linestyle='--', color='g')
+
+calculate_dtw(lowerBorder, upperBorder)
+plt.subplot(2, 1, 2)
 change_x = list(range(1, chart_divider))
 for change_y in changes:
     plt.plot(change_x, change_y, marker='o', linestyle='--')
 
-# plt.ylim(0, 2.5)
-# plt.xlim(0, 2.5)
+dtws = []
+for i in range(0, len(changes)):
+    for j in range(0, len(changes)):
+        if j != i:
+            dtw = calculate_dtw(changes[i], changes[j])
+            dtws.append(round(dtw, 4))
+
+print(dtws)
+dtw_sum = sum(dtws)
+avg_dtw = dtw_sum / len(dtws)
+print('Avg dtw ' + str(avg_dtw))
 plt.legend(loc='upper left')
 plt.show()
