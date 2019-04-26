@@ -2,6 +2,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from fastdtw import fastdtw
 import scipy
+from scipy.stats import pearsonr
 import json
 import math
 import statistics
@@ -18,11 +19,10 @@ fakes_map = {'ania': 'piorun',
 
 def load_data(path):
     tmp = []
-    for i in range(1, 2):
-        fullPath = 'Raspberry/' + path + '/' + path
-        name = fullPath + '(' + str(i) + ').json'
-        with open(name) as f:
-            tmp.append(json.load(f))
+    fullPath = 'Raspberry/' + path + '/' + path
+    name = fullPath + '(' + str(1) + ').json'
+    with open(name) as f:
+        tmp.append(json.load(f))
     return tmp
 
 
@@ -39,10 +39,14 @@ def time_analysis(datasets):
 
 def remove_outliers(someData):
     global maxLen
+    global minLen
     averages = []
     for d in someData:
         if len(someData[d]['sma']) > maxLen:
             maxLen = len(someData[d]['sma'])
+        if len(someData[d]['sma']) < minLen:
+            minLen = len(someData[d]['sma'])
+
         averages.append(statistics.mean(someData[d]['sma']))
     minI = averages.index(min(averages))
     maxI = averages.index(max(averages))
@@ -59,6 +63,10 @@ def calculate_area(y, dx):
 def split(a, n):
     k, m = divmod(len(a), n)
     return (a[i * k + min(i, m):(i + 1) * k + min(i + 1, m)] for i in range(n))
+
+
+def remove_elements_from_end(array, length):
+    return array[0:length]
 
 
 def calculate_area_intervals(y, dx, intervals):
@@ -126,6 +134,10 @@ def calculate_dtw(y1, y2):
 global maxLen
 maxLen = 0
 
+# shortes dataset
+global minLen
+minLen = 100000000
+
 # sampling frequency
 global freq
 freq = 0.025
@@ -167,7 +179,7 @@ for i in signatures:
         avg[a] = y[a]
     avgs.append(avg)
     # plt.plot(x, y, marker='o', linestyle='--', color='r')
-    plt.plot(ts, y, marker='o', linestyle='--', color='r')
+    plt.plot(ts, y, marker='o', linestyle='--')
 
 averageChart = [0] * maxLen
 
@@ -180,7 +192,7 @@ for av in avgs:
 ts = [0] * len(averageChart)
 ts[0] = 0
 # arrays with upper and lower boundaries
-interval = 0.1
+interval = 0.15
 
 # create average chart with boundaries
 (upperBorder, lowerBorder) = create_borders(averageChart, interval)
@@ -197,9 +209,9 @@ changes = calculate_areas_changes(areas)
 
 plt.ylim(0, 2.5)
 plt.xlim(0, 2.5)
-plt.plot(ts, upperBorder, marker='o', linestyle='--', color='y')
-plt.plot(ts, averageChart, marker='o', linestyle='--', color='b')
-plt.plot(ts, lowerBorder, marker='o', linestyle='--', color='g')
+# plt.plot(ts, upperBorder, marker='o', linestyle='--', color='y')
+# plt.plot(ts, averageChart, marker='o', linestyle='--', color='b')
+# plt.plot(ts, lowerBorder, marker='o', linestyle='--', color='g')
 
 calculate_dtw(lowerBorder, upperBorder)
 plt.subplot(2, 1, 2)
@@ -208,15 +220,35 @@ for change_y in changes:
     plt.plot(change_x, change_y, marker='o', linestyle='--')
 
 dtws = []
-for i in range(0, len(changes)):
-    for j in range(0, len(changes)):
-        if j != i:
-            dtw = calculate_dtw(changes[i], changes[j])
-            dtws.append(round(dtw, 4))
 
-print(dtws)
-dtw_sum = sum(dtws)
-avg_dtw = dtw_sum / len(dtws)
-print('Avg dtw ' + str(avg_dtw))
+smas = []
+for s in signatures:
+    smas.append(signatures[s]['sma'])
+
+pearson = []
+for i in range(0, len(smas) - 1):
+    for j in range(0, len(smas) - 1):
+        if i != j:
+            first = remove_elements_from_end(smas[i], minLen)
+            second = remove_elements_from_end(smas[j], minLen)
+            p,m = pearsonr(first, second)
+            print(p)
+            pearson.append(p)
+
+
+print("Avg:")
+print(statistics.mean(pearson))
+print("Median:")
+print(statistics.median(pearson))
+# for i in range(0, len(changes)):
+#     for j in range(0, len(changes)):
+#         if j != i:
+#             dtw = calculate_dtw(changes[i], changes[j])
+#             dtws.append(round(dtw, 4))
+#
+# print(dtws)
+# dtw_sum = sum(dtws)
+# avg_dtw = dtw_sum / len(dtws)
+# print('Avg dtw ' + str(avg_dtw))
 plt.legend(loc='upper left')
-plt.show()
+# plt.show()
