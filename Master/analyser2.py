@@ -129,6 +129,21 @@ def calculate_dtw(y1, y2):
     return distance
 
 
+def autocorelation(signatures):
+    time = []
+    values = []
+    previous_length = 0
+
+    for signature in signatures:
+        for t in signatures[signature]['t']:
+            time.append(t + previous_length)
+        # previous_length += signatures[signature]['t'][-1]
+        for v in signatures[signature]['sma']:
+            values.append(v)
+    # np.correlate(first,second)
+    return time, values
+
+
 # globals
 # maximum data pieces in set of charts
 global maxLen
@@ -165,7 +180,7 @@ signatures = remove_outliers(chart)
 avgs = []
 #  sampling frequency
 dt = 0.025
-plt.subplot(2, 1, 1)
+# plt.subplot(2, 1, 1)
 
 for i in signatures:
     x = signatures[str(i)]['t']
@@ -179,7 +194,7 @@ for i in signatures:
         avg[a] = y[a]
     avgs.append(avg)
     # plt.plot(x, y, marker='o', linestyle='--', color='r')
-    plt.plot(ts, y, marker='o', linestyle='--')
+    # plt.plot(ts, y, marker='o', linestyle='--')
 
 averageChart = [0] * maxLen
 
@@ -207,17 +222,17 @@ areas = get_signatures_areas(signatures)
 changes = calculate_areas_changes(areas)
 # print charts
 
-plt.ylim(0, 2.5)
-plt.xlim(0, 2.5)
+# plt.ylim(0, 2.5)
+# plt.xlim(0, 2.5)
 # plt.plot(ts, upperBorder, marker='o', linestyle='--', color='y')
 # plt.plot(ts, averageChart, marker='o', linestyle='--', color='b')
 # plt.plot(ts, lowerBorder, marker='o', linestyle='--', color='g')
 
 calculate_dtw(lowerBorder, upperBorder)
-plt.subplot(2, 1, 2)
+# plt.subplot(2, 1, 2)
 change_x = list(range(1, chart_divider))
-for change_y in changes:
-    plt.plot(change_x, change_y, marker='o', linestyle='--')
+# for change_y in changes:
+#     plt.plot(change_x, change_y, marker='o', linestyle='--')
 
 dtws = []
 
@@ -231,15 +246,14 @@ for i in range(0, len(smas) - 1):
         if i != j:
             first = remove_elements_from_end(smas[i], minLen)
             second = remove_elements_from_end(smas[j], minLen)
-            p,m = pearsonr(first, second)
-            print(p)
+            p, m = pearsonr(first, second)
+            # print(p)
             pearson.append(p)
 
-
-print("Avg:")
-print(statistics.mean(pearson))
-print("Median:")
-print(statistics.median(pearson))
+# print("Avg:")
+# print(statistics.mean(pearson))
+# print("Median:")
+# print(statistics.median(pearson))
 # for i in range(0, len(changes)):
 #     for j in range(0, len(changes)):
 #         if j != i:
@@ -250,5 +264,8 @@ print(statistics.median(pearson))
 # dtw_sum = sum(dtws)
 # avg_dtw = dtw_sum / len(dtws)
 # print('Avg dtw ' + str(avg_dtw))
-plt.legend(loc='upper left')
-# plt.show()
+(time, values) = autocorelation(signatures)
+plt.plot(time, values)
+# plt.acorr(values)
+# plt.legend(loc='upper left')
+plt.show()
