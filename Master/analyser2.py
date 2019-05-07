@@ -124,6 +124,25 @@ def calculate_areas_changes(areas):
     return changes
 
 
+def calculate_areas_growth(areas):
+    changes = []
+    for areaSet in areas:
+        sum = areaSet[0]
+        growth = []
+        for i in range(1, len(areaSet)):
+            growth.append(areaSet[i] / sum)
+            sum += areaSet[i]
+        changes.append(growth)
+    return changes
+
+
+'''
+drugi / pierwszy
+trzeci / drugi+pierwszy
+czwarty / 
+'''
+
+
 def calculate_dtw(y1, y2):
     distance, path = fastdtw(y1, y2)
     return distance
@@ -137,7 +156,7 @@ def autocorelation(signatures):
     for signature in signatures:
         for t in signatures[signature]['t']:
             time.append(t + previous_length)
-        # previous_length += signatures[signature]['t'][-1]
+        previous_length += signatures[signature]['t'][-1]
         for v in signatures[signature]['sma']:
             values.append(v)
     # np.correlate(first,second)
@@ -165,11 +184,11 @@ data = {}
 for friend in friends:
     data[friend] = load_data(friend)
 # which friend to check
-chart = load_data('ania')[0]
+# chart = load_data('ania')[0]
 # chart = load_data('piorun')[0]
 # chart = load_data('maciek')[0]
 # chart = load_data('mrozek')[0]
-# chart = load_data('bartek')[0]
+chart = load_data('bartek')[0]
 
 # remove outliers or not?
 signatures = remove_outliers(chart)
@@ -220,6 +239,7 @@ averageCoverage = get_signatures_coverage(signatures)
 areas = get_signatures_areas(signatures)
 
 changes = calculate_areas_changes(areas)
+growth = calculate_areas_growth(areas)
 # print charts
 
 # plt.ylim(0, 2.5)
@@ -230,9 +250,18 @@ changes = calculate_areas_changes(areas)
 
 calculate_dtw(lowerBorder, upperBorder)
 # plt.subplot(2, 1, 2)
-change_x = list(range(1, chart_divider))
+# change_x = list(range(1, chart_divider))
+
+# plot area chanfges
 # for change_y in changes:
 #     plt.plot(change_x, change_y, marker='o', linestyle='--')
+
+
+
+# plot area growths
+growth_x = list(range(1, chart_divider))
+for growth_y in growth:
+    plt.plot(growth_x, growth_y, marker='o', linestyle='--')
 
 dtws = []
 
@@ -265,7 +294,7 @@ for i in range(0, len(smas) - 1):
 # avg_dtw = dtw_sum / len(dtws)
 # print('Avg dtw ' + str(avg_dtw))
 (time, values) = autocorelation(signatures)
-plt.plot(time, values)
+# plt.plot(time, values)
 # plt.acorr(values)
 # plt.legend(loc='upper left')
 plt.show()
