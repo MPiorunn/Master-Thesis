@@ -136,16 +136,22 @@ def calculate_areas_growth(areas):
     return changes
 
 
-'''
-drugi / pierwszy
-trzeci / drugi+pierwszy
-czwarty / 
-'''
-
-
 def calculate_dtw(y1, y2):
     distance, path = fastdtw(y1, y2)
     return distance
+
+
+def calculate_all_dtw(data):
+    for i in range(0, len(data)):
+        for j in range(0, len(data)):
+            if j != i:
+                dtw = calculate_dtw(data[i], data[j])
+                dtws.append(round(dtw, 4))
+
+    print(dtws)
+    dtw_sum = sum(dtws)
+    avg_dtw = dtw_sum / len(dtws)
+    print('Avg dtw ' + str(avg_dtw))
 
 
 def autocorelation(signatures):
@@ -161,6 +167,18 @@ def autocorelation(signatures):
             values.append(v)
     # np.correlate(first,second)
     return time, values
+
+
+def calculate_pearsons(data):
+    pearson = []
+    for i in range(0, len(smas) - 1):
+        for j in range(0, len(smas) - 1):
+            if i != j:
+                first = remove_elements_from_end(data[i], minLen)
+                second = remove_elements_from_end(data[j], minLen)
+                p, m = pearsonr(first, second)
+                pearson.append(p)
+    return pearson
 
 
 # globals
@@ -183,12 +201,14 @@ chart_divider = 8
 data = {}
 for friend in friends:
     data[friend] = load_data(friend)
+
 # which friend to check
-# chart = load_data('ania')[0]
+chart = load_data('ania')[0]
 # chart = load_data('piorun')[0]
 # chart = load_data('maciek')[0]
 # chart = load_data('mrozek')[0]
-chart = load_data('bartek')[0]
+# zgubiłem dane :(
+# chart = load_data('bartek')[0]
 
 # remove outliers or not?
 signatures = remove_outliers(chart)
@@ -199,8 +219,7 @@ signatures = remove_outliers(chart)
 avgs = []
 #  sampling frequency
 dt = 0.025
-# plt.subplot(2, 1, 1)
-
+plt.subplot(5, 1, 1)
 for i in signatures:
     x = signatures[str(i)]['t']
     y = signatures[str(i)]['sma']
@@ -212,8 +231,8 @@ for i in signatures:
         t = round((t + dt), 3)
         avg[a] = y[a]
     avgs.append(avg)
-    # plt.plot(x, y, marker='o', linestyle='--', color='r')
-    # plt.plot(ts, y, marker='o', linestyle='--')
+    # plt.plot(x, y, marker='o', linestyle='--')
+    plt.plot(ts, y, marker='o', linestyle='--')
 
 averageChart = [0] * maxLen
 
@@ -244,20 +263,19 @@ growth = calculate_areas_growth(areas)
 
 # plt.ylim(0, 2.5)
 # plt.xlim(0, 2.5)
-# plt.plot(ts, upperBorder, marker='o', linestyle='--', color='y')
-# plt.plot(ts, averageChart, marker='o', linestyle='--', color='b')
-# plt.plot(ts, lowerBorder, marker='o', linestyle='--', color='g')
+plt.plot(ts, upperBorder, marker='+', color='r')
+plt.plot(ts, averageChart, marker='+', color='b')
+plt.plot(ts, lowerBorder, marker='+', color='r')
 
 calculate_dtw(lowerBorder, upperBorder)
-# plt.subplot(2, 1, 2)
-# change_x = list(range(1, chart_divider))
+plt.subplot(5, 1, 2)
 
 # plot area chanfges
-# for change_y in changes:
-#     plt.plot(change_x, change_y, marker='o', linestyle='--')
+change_x = list(range(1, chart_divider))
+for change_y in changes:
+    plt.plot(change_x, change_y, marker='o', linestyle='--')
 
-
-
+plt.subplot(5, 1, 3)
 # plot area growths
 growth_x = list(range(1, chart_divider))
 for growth_y in growth:
@@ -276,25 +294,36 @@ for i in range(0, len(smas) - 1):
             first = remove_elements_from_end(smas[i], minLen)
             second = remove_elements_from_end(smas[j], minLen)
             p, m = pearsonr(first, second)
-            # print(p)
             pearson.append(p)
 
-# print("Avg:")
-# print(statistics.mean(pearson))
-# print("Median:")
-# print(statistics.median(pearson))
-# for i in range(0, len(changes)):
-#     for j in range(0, len(changes)):
-#         if j != i:
-#             dtw = calculate_dtw(changes[i], changes[j])
-#             dtws.append(round(dtw, 4))
-#
-# print(dtws)
-# dtw_sum = sum(dtws)
-# avg_dtw = dtw_sum / len(dtws)
-# print('Avg dtw ' + str(avg_dtw))
+print("Avg:")
+print(statistics.mean(pearson))
+print("Median:")
+print(statistics.median(pearson))
+
+print("SMA dtws")
+calculate_all_dtw(smas)
+
+print("Changes DTWs")
+calculate_all_dtw(changes)
+
+print("Growth DTWs")
+calculate_all_dtw(growth)
+
+print("Pearsons")
+prsn = calculate_pearsons(smas)
+print(prsn)
+print("Average pearson")
+print(np.mean(prsn))
+
+
+
 (time, values) = autocorelation(signatures)
-# plt.plot(time, values)
-# plt.acorr(values)
+plt.subplot(5, 1, 4)
+plt.plot(time, values)
+
+plt.subplot(5, 1, 5)
+plt.acorr(values)
+
 # plt.legend(loc='upper left')
 plt.show()
