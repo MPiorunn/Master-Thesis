@@ -8,13 +8,14 @@ import math
 import statistics
 from pandas.io.json import json_normalize
 
-friends = ['ania', 'bartek', 'maciek', 'mrozek', 'piorun']
+friends = ['ania', 'bartek', 'maciek', 'mrozek', 'piorun', 'przemek']
 
 fakes_map = {'ania': 'piorun',
              'piorun': 'mrozek',
              'bartek': 'ania',
              'mrozek': 'piorun',
-             'maciek': 'bartek'}
+             'maciek': 'bartek',
+             'przemek': 'maciek'}
 
 
 def load_data(path):
@@ -50,8 +51,8 @@ def remove_outliers(someData):
         averages.append(statistics.mean(someData[d]['sma']))
     minI = averages.index(min(averages))
     maxI = averages.index(max(averages))
-    someData.pop(str(minI))
-    someData.pop(str(maxI))
+    # someData.pop(str(minI))
+    # someData.pop(str(maxI))
     # print('Removed min : ' + str(minI) + ' and max : ' + str(maxI))
     return someData
 
@@ -203,7 +204,8 @@ for friend in friends:
     data[friend] = load_data(friend)
 
 # which friend to check
-chart = load_data('ania')[0]
+# chart = load_data('ania')[0]
+chart = load_data('przemek')[0]
 # chart = load_data('piorun')[0]
 # chart = load_data('maciek')[0]
 # chart = load_data('mrozek')[0]
@@ -315,8 +317,6 @@ prsn = calculate_pearsons(smas)
 print(prsn)
 print("Average pearson")
 print(np.mean(prsn))
-
-
 
 (time, values) = autocorelation(signatures)
 plt.subplot(5, 1, 4)
